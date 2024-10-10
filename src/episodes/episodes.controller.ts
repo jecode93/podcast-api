@@ -5,9 +5,10 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
 import { CreateEpisodeDto } from './dto/create-episodes.dto';
@@ -23,31 +24,31 @@ export class EpisodesController {
 
   @Get('featured')
   featuredEpisode() {
-    return this.episodesService.findFeatured;
+    return this.episodesService.findFeatured();
   }
 
   @Get(':id')
-  async findOne(@Param() id: string) {
+  async findOne(@Param('id') id: string) {
     const episode = await this.episodesService.findOne(id);
     if (!episode) {
-      throw new NotFoundException('Episode not found');
+      throw new NotFoundException(`Episode with id ${id} not found`);
     } else {
       return episode;
     }
   }
 
   @Post()
-  createEpisodes(@Body() input: CreateEpisodeDto) {
+  createEpisodes(@Body(ValidationPipe) input: CreateEpisodeDto) {
     return this.episodesService.createEpisode(input);
   }
 
-  @Put(':id')
-  updateData(@Param() id: string, @Body() input: any) {
-    return `Data updated with id: ${id} and body ${input}`;
+  @Patch(':id')
+  updateEpisode(@Param('id') id: string, @Body() updateData: CreateEpisodeDto) {
+    return this.episodesService.update(id, updateData);
   }
 
   @Delete(':id')
-  deleteData(@Param() id: string) {
-    return `Data deleted with id: ${id}`;
+  deleteEpisode(@Param('id') id: string) {
+    return this.episodesService.delete(id);
   }
 }
