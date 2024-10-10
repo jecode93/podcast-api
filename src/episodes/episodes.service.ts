@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Episode } from './entity/episode.entity';
 import { CreateEpisodeDto } from './dto/create-episodes.dto';
 import { randomUUID } from 'crypto';
@@ -29,5 +29,30 @@ export class EpisodesService {
     this.episodes.push(newEpisode);
 
     return newEpisode;
+  }
+
+  async update(id: string, updateData: CreateEpisodeDto) {
+    const episode = this.episodes.find((episode) => episode.id === id);
+
+    if (!episode) {
+      throw new NotFoundException(`Episode with ID ${id} not found`);
+    }
+
+    // Update the episode fields with the provided data
+    Object.assign(episode, updateData);
+
+    return episode; // Return the updated episode
+  }
+
+  async delete(id: string) {
+    const episode = this.episodes.find((episode) => episode.id === id);
+
+    if (!episode) {
+      throw new NotFoundException(`Episode with ID ${id} not found`);
+    }
+
+    this.episodes = this.episodes.filter((episode) => episode.id !== id); // Remove the episode
+
+    return { message: `Episode with ID ${id} deleted successfully` };
   }
 }
