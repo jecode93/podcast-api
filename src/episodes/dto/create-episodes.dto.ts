@@ -13,3 +13,16 @@ export class CreateEpisodeDto {
   @Type(() => Date)
   publishedAt: Date;
 }
+
+export class UpdateEpisodeDto {
+  @IsString()
+  name: string;
+
+  @IsBoolean()
+  @IsOptional()
+  featured?: boolean;
+
+  @IsDate()
+  @Type(() => Date)
+  publishedAt: Date;
+}
