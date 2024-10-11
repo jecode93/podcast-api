@@ -11,7 +11,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
-import { CreateEpisodeDto } from './dto/create-episodes.dto';
+import { CreateEpisodeDto, UpdateEpisodeDto } from './dto/create-episodes.dto';
 
 @Controller('episodes')
 export class EpisodesController {
@@ -44,7 +44,7 @@ export class EpisodesController {
   @Patch(':id')
   updateEpisode(
     @Param('id') id: string,
-    @Body(ValidationPipe) updateData: CreateEpisodeDto,
+    @Body(ValidationPipe) updateData: UpdateEpisodeDto,
   ) {
     return this.episodesService.update(id, updateData);
   }
