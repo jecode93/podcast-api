@@ -42,7 +42,10 @@ export class EpisodesController {
   }
 
   @Patch(':id')
-  updateEpisode(@Param('id') id: string, @Body() updateData: CreateEpisodeDto) {
+  updateEpisode(
+    @Param('id') id: string,
+    @Body(ValidationPipe) updateData: CreateEpisodeDto,
+  ) {
     return this.episodesService.update(id, updateData);
   }
 
