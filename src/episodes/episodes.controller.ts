@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
 import { CreateEpisodeDto, UpdateEpisodeDto } from './dto/create-episodes.dto';
+import { Episode } from './entity/episode.entity';
 
 @Controller('episodes')
 export class EpisodesController {
@@ -28,7 +29,7 @@ export class EpisodesController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Episode> {
     const episode = await this.episodesService.findOne(id);
     if (!episode) {
       throw new NotFoundException(`Episode with id ${id} not found`);
