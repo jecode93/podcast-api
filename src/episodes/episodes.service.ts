@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Episode } from './entity/episode.entity';
-import { CreateEpisodeDto } from './dto/create-episodes.dto';
+import { CreateEpisodeDto, UpdateEpisodeDto } from './dto/create-episodes.dto';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class EpisodesService {
     return newEpisode;
   }
 
-  async update(id: string, updateData: CreateEpisodeDto) {
+  async update(id: string, updateData: UpdateEpisodeDto) {
     const episode = this.episodes.find((episode) => episode.id === id);
 
     if (!episode) {
