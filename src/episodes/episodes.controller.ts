@@ -32,9 +32,8 @@ export class EpisodesController {
     const episode = await this.episodesService.findOne(id);
     if (!episode) {
       throw new NotFoundException(`Episode with id ${id} not found`);
-    } else {
-      return episode;
     }
+    return episode;
   }
 
   @Post()
