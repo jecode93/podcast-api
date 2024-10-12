@@ -1,58 +1,54 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Episode } from './entity/episode.entity';
 import { CreateEpisodeDto, UpdateEpisodeDto } from './dto/create-episodes.dto';
-import { randomUUID } from 'crypto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class EpisodesService {
-  private episodes: Episode[] = [];
+  constructor(
+    @InjectRepository(Episode)
+    private readonly episodesRepository: Repository<Episode>,
+  ) {}
 
-  async findAll(sort: 'asc' | 'desc' = 'asc') {
-    const sortAsc = (a: Episode, b: Episode) => (a.name > b.name ? 1 : -1);
-    const sortDesc = (a: Episode, b: Episode) => (a.name < b.name ? 1 : -1);
-
-    return sort === 'asc'
-      ? this.episodes.sort(sortAsc)
-      : this.episodes.sort(sortDesc);
+  findAll(): Promise<Episode[]> {
+    return this.episodesRepository.find();
   }
 
-  async findFeatured() {
-    return this.episodes.filter((episode) => episode.featured);
+  async findFeatured(): Promise<Episode[]> {
+    return this.episodesRepository.findBy({ featured: true });
   }
 
-  async findOne(id: string) {
-    return this.episodes.find((episode) => episode.id === id);
+  async findOne(id: string): Promise<Episode> {
+    return this.episodesRepository.findOneBy({ id: id });
   }
 
-  async createEpisode(createEpisodeDto: CreateEpisodeDto) {
-    const newEpisode = { ...createEpisodeDto, id: randomUUID() };
-    this.episodes.push(newEpisode);
+  async createEpisode(createEpisodeDto: CreateEpisodeDto): Promise<Episode> {
+    const newEpisode = this.episodesRepository.create(createEpisodeDto);
+    await this.episodesRepository.save(newEpisode);
 
     return newEpisode;
   }
 
   async update(id: string, updateData: UpdateEpisodeDto) {
-    const episode = this.episodes.find((episode) => episode.id === id);
+    const result = await this.episodesRepository.update(id, updateData); // Perform the update
 
-    if (!episode) {
+    // Check if any rows were affected (i.e., updated)
+    if (result.affected === 0) {
       throw new NotFoundException(`Episode with ID ${id} not found`);
     }
 
-    // Update the episode fields with the provided data
-    Object.assign(episode, updateData);
-
-    return episode; // Return the updated episode
+    // Fetch and return the updated episode
+    return this.episodesRepository.findOne({ where: { id } });
   }
 
   async delete(id: string) {
-    const episode = this.episodes.find((episode) => episode.id === id);
+    const episode = await this.episodesRepository.findOneBy({ id: id });
 
     if (!episode) {
       throw new NotFoundException(`Episode with ID ${id} not found`);
     }
 
-    this.episodes = this.episodes.filter((episode) => episode.id !== id); // Remove the episode
-
-    return { message: `Episode with ID ${id} deleted successfully` };
+    return this.episodesRepository.remove(episode); // Remove the episode
   }
 }
