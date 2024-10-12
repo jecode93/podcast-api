@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
@@ -19,8 +18,8 @@ export class EpisodesController {
   constructor(private episodesService: EpisodesService) {}
 
   @Get()
-  findAll(@Query('sort') sort: 'asc' | 'desc' = 'desc') {
-    return this.episodesService.findAll(sort);
+  findAll() {
+    return this.episodesService.findAll();
   }
 
   @Get('featured')
